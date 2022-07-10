@@ -4,32 +4,32 @@
  */
 var lengthOfLongestSubstring = function(s) {
     let start = 0;
-    let end = 0;
-    const letterCountsInWindow = {};
+    const letterIndices = {};
     let maxLetterCount = 0;
 
-    while (end < s.length) {
-        // First, walk the end of the window forward.
-        letterCountsInWindow[s[end]] = letterCountsInWindow[s[end]] || 0;
-        letterCountsInWindow[s[end]] += 1;
+    // Iterate through the whole string exactly _once_.
+    for (let end = 0; end < s.length; end++) {
 
-        // Start walking the start forward.
-        while (letterCountsInWindow[s[end]] > 1) {
-            // The window is now shorter by one letter, so remove that
-            // letter from our hash.
-            letterCountsInWindow[s[start]] -= 1;
-
-            // And then move the start forward.
-            start += 1;
+        // If the end of the window finds a letter that already exists
+        // in our letterIndices, then we need to move the _start_ of
+        // the window to the latest instance of that letter index. We
+        // can skip over any intervening letters because they won't
+        // cause the start of the window to move.
+        if (s[end] in letterIndices) {
+            start = Math.max(letterIndices[s[end]], start);
         }
 
-        maxLetterCount = Math.max(maxLetterCount, end - start + 1)
+        // Once that's done, we recalculate the max letter count,
+        // updating it if it's larger that what we've already found.
+        maxLetterCount = Math.max(maxLetterCount, end - start + 1);
 
-        end += 1;
+        // And increment our letterIndices on the letter we've just
+        // processed.
+        letterIndices[s[end]] = end + 1;
     }
 
     return maxLetterCount;
 };
 
-const input = "nfpdmpi";
+const input = "abba";
 console.log(lengthOfLongestSubstring(input));
